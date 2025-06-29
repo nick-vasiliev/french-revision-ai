@@ -8,9 +8,6 @@ from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.graph import StateGraph, MessagesState, START
 
-from IPython.display import Image, display
-
-
 DB_URI = "postgresql://svc_revision_bot:svc_revision_bot@localhost:5432/revision_bot?sslmode=disable"
 
 model_id = "amazon.titan-text-lite-v1"
@@ -33,11 +30,13 @@ with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
             "thread_id": "4"
         }
     }
+    
     checkpoints = checkpointer.list(config)
     builder = StateGraph(MessagesState)
+    checkpoints = list(checkpointer.list(config, limit=1))
     for checkpoint in checkpoints: 
         print("\nCHECKPOINT")
-        print(checkpoint)
+        print(checkpoint[3]['configurable']['checkpoint_id'])
 
     """
     for chunk in graph.stream(
